@@ -1,0 +1,76 @@
+# TCGA-COAD
+library(readr)
+TCGA_COAD_counts <- read_csv("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-COAD.counts.csv")
+View(TCGA_COAD_counts)
+
+load("~/CSBL_shared/clinical/TCGA_clin/COAD_clin.Rdata")
+TCGA_counts <- data.table::fread("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-COAD.counts.csv")
+
+TCGA_counts <- as.data.frame(TCGA_counts)
+rownames(TCGA_counts) <- TCGA_counts$Ensembl
+TCGA_counts$Ensembl <- NULL
+
+table.TNM <- table(COAD_clinical$stage_event_tnm_categories)
+View(table.TNM)
+
+# Adding column to TNM Stage Matrix
+Met.COAD <- c("T3N0M1", "T3N0M1a", "T3N0M1b", "T3N1aM1", "T3N1aM1a", "T3N1M1", "T3N2aM1", "T3N2bM1b", "T3N2M1", "T4aN0M1a", "T4aN1aM1a", "T4aN1bM1a", "T4aN1cM1a", "T4aN1M1", "T4aN2bM1a", "T4aN2M1", "T4bN1bM1b", "T4bN1M1", "T4N0M1", "T4N1bM1a", "T4N1M1", "T4N2M1")
+NoMet.COAD <- c("T1N0", "T1N0M0", "T1N0MX", "T2N0", "T2N0M0", "T2N0MX", "T3N0", "T3N0M0", "T4aN0M0", "T4aN0MX", "T4bN0M0", "T4bN0MX", "T4N0M0", "TisN0MX")
+Node.COAD <- c("T1N1bM0", "T2N1aM0", "T2N1M0", "T2N1MX", "T2N2aM0", "T3N0MX", "T3N1", "T3N1aM0", "T3N1aMX", "T3N1bM0", "T3N1bMX", "T3N1cM0", "T3N1M0", "T3N1MX", "T3N2aM0", "T3N2aMX", "T3N2b", "T3N2bM0", "T3N2bMX", "T3N2M0", "T3N2MX", "T4aN1aM0", "T4aN1bM0", "T4aN1M0", "T4aN1MX", "T4aN2aMX", "T4aN2b", "T4aN2bM0", "T4aN2bM1", "T4aN2bMX", "T4bN1aMX", "T4bN1bMX", "T4bN2M0", "T4N1M0", "T4N2M0")
+
+  
+
+# Adding column to TNM Stage Matrix 
+dat <- read.csv("TNM_STAGE_COAD.csv", header = TRUE)
+
+COAD_clinical.MS <- left_join(COAD_clinical, dat, by = c("stage_event_tnm_categories" = "TNMSTAGE"))
+
+unique(COAD_clinical.MS$Status)
+
+# Filter of Status by Stage
+Met.COAD <- filter(dat, Status == "Met")
+noMet.COAD <- filter(dat, Status == "noMet")
+Node.COAD <- filter(dat, Status == "Node")
+
+
+# Grouping of dat2 by Status
+data.grouped <- rbind(Met.COAD, noMet.COAD, Node.COAD)
+
+
+vector <- c("noMet", "Met", "Node")
+
+# noMet file
+foo <- COAD_clinical.MS[COAD_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 77]
+c <- foo[ , 3]
+d <- foo[ , 70]
+
+noMet.file <- cbind(a, b, c, d)
+
+
+# Met file
+foo <- COAD_clinical.MS[COAD_clinical.MS$Status == "Met",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 77]
+c <- foo[ , 3]
+d <- foo[ , 70]
+
+Met.file <- cbind(a, b, c, d)
+
+
+# Node file
+foo <- COAD_clinical.MS[COAD_clinical.MS$Status == "Node",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 77]
+c <- foo[ , 3]
+d <- foo[ , 70]
+
+Node.file <- cbind(a, b, c, d)
+options(max.print = 10000)
