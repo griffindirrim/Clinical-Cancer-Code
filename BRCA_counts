@@ -1,0 +1,86 @@
+library(DESeq2)
+library(dplyr)
+
+load("~/CSBL_shared/clinical/TCGA_clin/BRCA_clin.Rdata")
+
+TCGA_counts <- data.table::fread("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-BRCA.counts.csv")
+
+TCGA_counts <- as.data.frame(TCGA_counts)
+rownames(TCGA_counts) <- TCGA_counts$Ensembl
+TCGA_counts$Ensembl <- NULL
+
+table.TNM <- table(BRCA_clinical$stage_event_tnm_categories)
+View(table.TNM)
+
+# Adding column to TNM Stage Matrix
+Met.stage <- c("T1cNXM1","T2N0M1","T2N1aM1","T2N1bM1","T2N1M1","T2N2aM1","T2N2M1","T2N3aM1","T2NXM1","T3N1M1","T3N3M1","T3NXM1","T4bN2M1","T4bN3aM1","T4bN3M1","T4dN3bM1","T4N1aM1")
+Node.stage <- c("T1aN1cM0","T1bN1aMX","T1bN3aM0","T1bN3aMX","T1cN1acM0 (i+)","T1cN1aM0","T1cN1aMX","T1cN1bM0","T1cN1M0","T1cN1miM0","T1cN1miMX","T1cN1MX","T1cN2aM0 ","T1cN2aMX","T1cN2M0","T1cN3aMX","T1cNXM0","T1N1aM0","T1N1M0 ","T1N2aM0","T1N2M0","T2bN1M0","T2N1acM0 (i+)","T2N1aM0","T2N1aMX","T2N1bM0","T2N1bMX","T2N1micM0 (i+)","T2N1miM0","T2N1miMX ","T2N1MX","T2N2aM0","T2N2aMX","T2N2M0","T2N3aM0","T2N3aMX","T2N3bM0","T2N3bMX","T2N3cM0 ","T2N3M0","T2N3MX","T2NXM0","T3aN3M0","T3N1acM0 (i+) ","T3N1aM0","T3N1aMX","T3N1bM0","T3N1cM0","T3N1M0","T3N1miM0","T3N1MX","T3N2aM0","T3N2aMX","T3N2M0","T3N3aM0 ","T3N3aMX","T3N3M0","T4bN1aM0","T4bN1bM0","T4bN1M0","T4bN2aM0","T4bN2M0 ","T4bN3aM0","T4bN3aMX","T4bN3M0 ","T4dN2aMX","T4dN3aM0","T4N1aM0 ","T4N1M0")
+NoMet.stage <- c("T1bNXM0","T1cN0 (i-)M0", "T1cN0 (i-)MX","T1cN0 (i+)M0 ","T1cN0 (mol+)M0","T1cN0M0","T1cN0MX","T1bN0 (i-)M0","T1bN0 (i+)M0","T1bN0M0","T1bN0MX","T1cNXMX","T1N0 (i-)M0","T1N0 (i+)cM0 (i+)","T1N0 (i+)M0","T1N0M0","T1NXM0","T2aN0 (i-)MX","T2N0 (i-)M0","T2N0 (i-)MX","T2N0 (i+)M0","T2N0 (i+)MX","T2N0M0","T2N0MX ","T2N1M0","T2NXMX","T3N0 (i-)M0","T3N0 (i-)MX","T3N0 (i+)M0","T3N0M0","T3N0MX","T3N3MX","T4bN0M0","T4bN0MX","T4bNXM0","T4N0M0","TXN0(i-)M0","TXNXMX")
+
+# Adding column to TNM Stage Matrix
+dat <- read.csv("TNM_STAGE.csv", header = TRUE)
+
+BRCA_clinical.MS <- left_join(BRCA_clinical, dat, by = c("stage_event_tnm_categories" = "TNMSTAGE"))
+
+unique(BRCA_clinical.MS$noMet)
+
+# Changing name of column
+dat <- dat %>% rename(Status = noMet)
+BRCA_clinical.MS <- BRCA_clinical.MS %>% rename(Status = noMet)
+
+# Filter of Status by Stage
+Met.BRCA <- filter(dat, Status == "Met")
+noMet.BRCA <- filter(dat, Status == "noMet")
+Node.BRCA <- filter(dat, Status == "Node")
+
+
+# Grouping of dat2 by Status
+data.grouped <- rbind(Met.BRCA, noMet.BRCA, Node.BRCA)
+
+
+vector <- c("noMet", "Met", "Node")
+
+# noMet file
+foo <- BRCA_clinical.MS[BRCA_clinical.MS$Status == "noMet",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 115]
+c <- foo[ , 3]
+d <- foo[ , 108]
+
+noMet.file <- cbind(a, b, c, d)
+
+
+# Met file
+foo <- BRCA_clinical.MS[BRCA_clinical.MS$Status == "Met",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 115]
+c <- foo[ , 3]
+d <- foo[ , 108]
+
+Met.file <- cbind(a, b, c, d)
+
+
+# Node file
+foo <- BRCA_clinical.MS[BRCA_clinical.MS$Status == "Node",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 115]
+c <- foo[ , 3]
+d <- foo[ , 108]
+
+Node.file <- cbind(a, b, c, d)
+options(max.print = 10000)  
+
+
+
+
+  
+
+
+
+
