@@ -1,0 +1,77 @@
+# TCGA-KIRP
+library(readr)
+TCGA_KIRP_counts <- read_csv("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-KIRP.counts.csv")
+View(TCGA_KIRP_counts)
+
+load("~/CSBL_shared/clinical/TCGA_clin/KIRP_clin.Rdata")
+TCGA_counts <- data.table::fread("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-KIRP.counts.csv")
+
+TCGA_counts <- as.data.frame(TCGA_counts)
+rownames(TCGA_counts) <- TCGA_counts$Ensembl
+TCGA_counts$Ensembl <- NULL
+
+table.TNM <- table(KIRP_clinical$stage_event_tnm_categories)
+View(table.TNM)
+
+# Adding column to TNM Stage Matrix
+Met.KIRP <- c("M1T2aNXMX", "T1N0M1T2aN0M1", "T2N0M1T2NX", "T2N0M1T2NXM1", "T3aN1M0T3bN1M1", "T3aN1M1T3aN1M1", "T3aN1M1T3aN1MX", "T3bN1M1T3bN1M1", "T4N1M1T4N1M1")
+
+NoMet.KIRP <- c("TXN0M0T1aNXMX", "TXNXMX", "T3NXM0T3aN0M0", "T3N0M0T3N0M0", "T3aNXMXT3aNXMX", "T3bN0M0T1aNXMX", "T3bN0M0T3bNX", "T3bN0MXT3bN0MX", "T3aNXM0", "T3aNXM0T1bNXM0", "T3aNXM0T3aNXM0", "T3aNXM0T3bN0M0", "T3aNXM0T3NXM0", "T3aN0M0T3aNX", "T3aN0M0T3aNXMX", "T3aN0M0T3bN0M0", "T3aN0M0T3bN0MX", "T3aN0MX", "T2NXM0", "T2NXM0T2NX", "T2NXMX", "T3aN0M0T3aN0M0", "T2N0M0T3aNX", "T2bN0M0T3bN0M0", "T2bNXM0T2bNXM0", "T2bNXM0T3aNXM0", "T2bNXMXT2bNXMX", "T2N0M0T1bNXMX", "T2N0M0T2aNXMX", "T2N0M0T2bN0MX", "T2N0M0T2N0M0", "T2N0M0T2NXMX", "T2aNXM0T2aNXM0", "T2aNXMXT2aNXMX", "T2bN0M0T2bN0M0", "T2bN0M0T2bNXM0", "T2bN0M0T2N0M0", "T2bN0M0T2NXMX", "T2aN0M0T2aNX", "T2aN0M0T3N0M0", "T1NXM0", "T1NXM0T1aNXM0", "T1NXM0T1NXM0", "T1NXMX", "T1NXMXT1bNXMX T1N0MXT1aNXMX", "T1N0M0T1bNXM0", "T1N0M0T1bNXMX", "T1N0M0T1N0M0", "T1N0M0T1NX", "T1N0M0T1NXM0", "T1N0M0T1NXMX", "T1N0M0T3aN0M0", "T1N0M0T3aNX", "T1N0M0T3aNXMX", "T1bNXMX", "T1bNXMXT1bNXM0", "T1bNXMXT1bNXMX", "T1N0M0", "T1N0M0T1aN0MX", "T1N0M0T1aNXM0", "T1N0M0T1aNXMX", "T1N0M0T1bN0M0", "T1N0M0T1bN1MX", "T1bN0M0T2N0M0", "T1bN0M0T2NXM0", "T1bN0M0T3aNXMX", "T1bN0MX", "T1bN0MXT1bN0M0", "T1bN0MXT1bN0MX", "T1bN0MXT1bNXMX", "T1bNXM0T1bNXM0", "T1bNXM0T1bNXMX", "T1aNXM0T1NXM0", "T1aNXMX", "T1aNXMXT1aNXM0", "T1aNXMXT1aNXMX", "T1aNXMXT1bNXMX", "T1bN0M0T1bN0M0", "T1bN0M0T1bN0MX", "T1bN0M0T1bNXM0", "T1bN0M0T1bNXMX", "T1aN0M0T1bN0MX", "T1aN0M0T1bNXMX", "T1aN0M0T1N0M0", "T1aN0M0T1NXM0", "T1aN0M0T1NXMX", "T1aN0MXT1aNXMX", "T1aNXM0", "T1aNXM0T1aNXM0", "T1aNXM0T1aNXMX", "MXT2NXMX", "MXT3aNXMX", "MXT3cN0MX", "T1aN0M0T1aN0M0", "T1aN0M0T1aN0MX", "T1aN0M0T1aNX", "T1aN0M0T1aNXM0", "T1aN0M0T1aNXMX", "M0T3NXMX", "MXT1aN0MX", "MXT1aNX", "MXT1aNXMX", "MXT1bNX", "MXT1bNXMX", "MXT1N0MX", "MXT1NXMX", "M0T3aNXMX", "M0T3NXM0", "M0T1aN0M0", "M0T1aNX", "M0T1aNXM0", "M0T1aNXMX", "M0T1bN0M0", "M0T1bNXM0", "M0T1bNXMX", "M0T1N0MX", "M0T1NXMX", "M0T2aNXMX", "M0T2N0MX", "M0T2NXM0", "M0T2NXMX")
+
+Node.KIRP <- c("TXNXMXT3aN2MX", "T4N1MX", "T3N1M0T2aN1M0", "T3N1M0T3N1M0", "T3N1MX", "T3aN1M0T3M0", "T3aN1MXT3aN1MX", "M0T2N1MX", "M0T3aN1MX", "M0T3aN2MX", "MXT3aN1MX", "T1N1M0T1bN1MX", "T1N1M0T3aN1MX", "T2aN1M0T3aN1MX", "T2N2M0T3aN2MX", "T2N2MXT3N2M0", "T3aN1M0T3aN1M0", "T3aN1M0T3aN1MX", "T3aN1M0T3bN1M0")
+
+
+# Adding column to TNM Stage Matrix 
+dat <- read.csv("TNM_STAGE_KIRP.csv", header = TRUE)
+
+KIRP_clinical.MS <- left_join(KIRP_clinical, dat, by = c("stage_event_tnm_categories" = "TNMSTAGE"))
+
+unique(KIRP_clinical.MS$Status)
+
+# Filter of Status by Stage
+Met.KIRP <- filter(dat, Status == "Met")
+NoMet.KIRP <- filter(dat, Status == "noMet")
+Node.KIRP <- filter(dat, Status == "Node")
+
+
+# Grouping of dat2 by Status
+data.grouped <- rbind(Met.KIRP, NoMet.KIRP, Node.KIRP)
+
+
+vector <- c("noMet", "Met", "Node")
+
+# noMet file
+foo <- KIRP_clinical.MS[KIRP_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , 1] 
+b <- foo[ , 69] 
+c <- foo[ , 3] 
+d <- foo[ , 62] 
+
+noMet.file <- cbind(a, b, c, d)
+
+
+# Met file
+foo <- KIRP_clinical.MS[KIRP_clinical.MS$Status == "Met",]
+View(foo)
+
+a <- foo[ , 1] 
+b <- foo[ , 69] 
+c <- foo[ , 3] 
+d <- foo[ , 62] 
+
+Met.file <- cbind(a, b, c, d)
+
+
+# Node file
+foo <- KIRP_clinical.MS[KIRP_clinical.MS$Status == "Node",]
+View(foo)
+
+a <- foo[ , 1] 
+b <- foo[ , 69] 
+c <- foo[ , 3] 
+d <- foo[ , 62] 
+
+Node.file <- cbind(a, b, c, d)
+options(max.print = 10000)
