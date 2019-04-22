@@ -1,0 +1,77 @@
+# TCGA-LUAD
+library(readr)
+TCGA_LUAD_counts <- read_csv("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-LUAD.counts.csv")
+View(TCGA_LUAD_counts)
+
+load("~/CSBL_shared/clinical/TCGA_clin/LUAD_clin.Rdata")
+TCGA_counts <- data.table::fread("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-LUAD.counts.csv")
+
+TCGA_counts <- as.data.frame(TCGA_counts)
+rownames(TCGA_counts) <- TCGA_counts$Ensembl
+TCGA_counts$Ensembl <- NULL
+
+table.TNM <- table(LUAD_clinical$stage_event_tnm_categories)
+View(table.TNM)
+
+# Adding column to TNM Stage Matrix
+Met.LUAD <- c("T1aN1M1b", "T1N0M1", "T2aN0M1a", "T2aN2M1", "T2aN2M1a", "T2bN0M1b", "T2N0M1", "T2N1M1", "T2N2M1", "T2NXM1", "T3N2M1b", "TXNXM1", "TXNXM1b", "T4N1M1", "T4N2M1")
+
+NoMet.LUAD <- c("T4N0M0", "T4N0MX", "T3N0M0", "TXNXMX", "T3N0MX", "T2NXM0", "T2NXMX", "T1aN0M0", "T1aN0MX", "T1bN0M0", "T1bN0MX", "T1bNXM0", "T1N0M0", "T1N0MX", "T1NX", "T1NXM0", "T2aN0", "T2aN0M0", "T2aN0MX", "T2aNXMX", "T2b", "T2bN0M0", "T2bN0MX", "T2N0M0", "T2N0MX")
+
+Node.LUAD <- c("T4N1M0", "T4N2M0", "T4N3M0", "T3N2MX", "T3N1M0", "T3N1MX", "T3N2M0", "T2N1MX", "T2N2MX", "T2N2M0", "T2N1M0", "T1aN1M0", "T1aN1MX", "T1aN2MX", "T1aN3MX", "T1bN1M0", "T1bN1MX", "T1bN2M0", "T1bN2MX", "T1N1M0", "T1N1MX", "T1N2M0", "T1N2MX", "T2aN1M0", "T2aN1MX", "T2aN2M0", "T2aN2MX", "T2bN1M0", "T2bN1MX", "T2bN2", "T2bN2M0")
+
+
+# Adding column to TNM Stage Matrix 
+dat <- read.csv("TNM_STAGE_LUAD.csv", header = TRUE)
+
+LUAD_clinical.MS <- left_join(LUAD_clinical, dat, by = c("stage_event_tnm_categories" = "TNMSTAGE"))
+
+unique(LUAD_clinical.MS$Status)
+
+# Filter of Status by Stage
+Met.LUAD <- filter(dat, Status == "Met")
+NoMet.LUAD <- filter(dat, Status == "noMet")
+Node.LUAD <- filter(dat, Status == "Node")
+
+
+# Grouping of dat2 by Status
+data.grouped <- rbind(Met.LUAD, NoMet.LUAD, Node.LUAD)
+
+
+vector <- c("noMet", "Met", "Node")
+
+# noMet file
+foo <- LUAD_clinical.MS[LUAD_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , 1] 
+b <- foo[ , 77] 
+c <- foo[ , 3] 
+d <- foo[ , 70] 
+
+noMet.file <- cbind(a, b, c, d)
+
+
+# Met file
+foo <- LUAD_clinical.MS[LUAD_clinical.MS$Status == "Met",]
+View(foo)
+
+a <- foo[ , 1] 
+b <- foo[ , 77] 
+c <- foo[ , 3] 
+d <- foo[ , 70] 
+
+Met.file <- cbind(a, b, c, d)
+
+
+# Node file
+foo <- LUAD_clinical.MS[LUAD_clinical.MS$Status == "Node",]
+View(foo)
+
+a <- foo[ , 1] 
+b <- foo[ , 77] 
+c <- foo[ , 3] 
+d <- foo[ , 70] 
+
+Node.file <- cbind(a, b, c, d)
+options(max.print = 10000)
