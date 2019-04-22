@@ -1,0 +1,76 @@
+# TCGA-ESCA
+library(readr)
+TCGA_ESCA_counts <- read_csv("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-ESCA.counts.csv")
+View(TCGA_ESCA_counts)
+
+load("~/CSBL_shared/clinical/TCGA_clin/ESCA_clin.Rdata")
+TCGA_counts <- data.table::fread("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-ESCA.counts.csv")
+
+TCGA_counts <- as.data.frame(TCGA_counts)
+rownames(TCGA_counts) <- TCGA_counts$Ensembl
+TCGA_counts$Ensembl <- NULL
+
+table.TNM <- table(ESCA_clinical$stage_event_tnm_categories)
+View(table.TNM)
+
+# Adding column to TNM Stage Matrix
+Met.COAD <- c()
+NoMet.COAD <- c()
+Node.COAD <- c()
+
+
+
+# Adding column to TNM Stage Matrix 
+dat <- read.csv("TNM_STAGE_ESCA.csv", header = TRUE)
+
+ESCA_clinical.MS <- left_join(ESCA_clinical, dat, by = c("stage_event_tnm_categories" = "TNMSTAGE"))
+
+unique(ESCA_clinical.MS$Status)
+
+# Filter of Status by Stage
+Met.ESCA <- filter(dat, Status == "Met")
+noMet.ESCA <- filter(dat, Status == "noMet")
+Node.ESCA <- filter(dat, Status == "Node")
+
+
+# Grouping of dat2 by Status
+data.grouped <- rbind(Met.ESCA, noMet.ESCA, Node.ESCA)
+
+
+vector <- c("noMet", "Met", "Node")
+
+# noMet file
+foo <- ESCA_clinical.MS[ESCA_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , ]
+b <- foo[ , ]
+c <- foo[ , ]
+d <- foo[ , ]
+
+noMet.file <- cbind(a, b, c, d)
+
+
+# Met file
+foo <- ESCA_clinical.MS[ESCA_clinical.MS$Status == "Met",]
+View(foo)
+
+a <- foo[ , ]
+b <- foo[ , ]
+c <- foo[ , ]
+d <- foo[ , ]
+
+Met.file <- cbind(a, b, c, d)
+
+
+# Node file
+foo <- ESCA_clinical.MS[ESCA_clinical.MS$Status == "Node",]
+View(foo)
+
+a <- foo[ , ]
+b <- foo[ , ]
+c <- foo[ , ]
+d <- foo[ , ]
+
+Node.file <- cbind(a, b, c, d)
+options(max.print = 10000)
