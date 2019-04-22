@@ -1,0 +1,78 @@
+# TCGA-KICH
+library(readr)
+TCGA_KICH_counts <- read_csv("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-KICH.counts.csv")
+View(TCGA_KICH_counts)
+
+load("~/CSBL_shared/clinical/TCGA_clin/KICH_clin.Rdata")
+TCGA_counts <- data.table::fread("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-KICH.counts.csv")
+
+TCGA_counts <- as.data.frame(TCGA_counts)
+rownames(TCGA_counts) <- TCGA_counts$Ensembl
+TCGA_counts$Ensembl <- NULL
+
+table.TNM <- table(KICH_clinical$stage_event_tnm_categories)
+View(table.TNM)
+
+# Adding column to TNM Stage Matrix
+Met.KICH <- c("M1T1bN0 ", "T3aN1M1 ", "T3aNXM1")
+
+NoMet.KICH <- c("T3aN0M0 ", "T3bN2M0 ", "T3bNXM0 ", "T3N0M0 ", "MXT1bNXMX ", "MXT1NX ", "MXT1NXMX ", "MXT2aN0 ", "MXT2bNX ", "MXT2N0MX ", "MXT2NX ", "MXT2NXMX ", "MXT3aNX ", "MXT3aNXMX ", "T1bN0M0 ", "T2bN0M0 ", "T2N0M0 ", "T2NXM0 ", "MXT1aN0 ", "MXT1aNX ", "MXT1aNXMX ", "MXT1bNX ", "M0T3aNX ", "M0T4NX ", "M0T1aN0 ", "M0T1aNX ", "M0T1aNXMX ", "M0T1bN0 ", "M0T1bN0M0 ", "M0T1bNX ", "M0T1bNXM0 ", "M0T1bNXMX ", "M0T1N0M0 ", "M0T2aNX ", "M0T2aNXMX ", "M0T2bN0M0 ", "M0T2bNXMX ", "M0T2N0 ", "M0T2N0M0 ", "M0T2NX ", "M0T3aN0 ", "M0T3aN0M0")
+
+Node.KICH <- c("M0T3aN1 ", "M0T3N1 ", "M0T4N1")
+
+
+
+# Adding column to TNM Stage Matrix 
+dat <- read.csv("TNM_STAGE_KICH.csv", header = TRUE)
+
+KICH_clinical.MS <- left_join(KICH_clinical, dat, by = c("stage_event_tnm_categories" = "TNMSTAGE"))
+
+unique(KICH_clinical.MS$Status)
+
+# Filter of Status by Stage
+Met.KICH <- filter(dat, Status == "Met")
+NoMet.KICH <- filter(dat, Status == "noMet")
+Node.KICH <- filter(dat, Status == "Node")
+
+
+# Grouping of dat2 by Status
+data.grouped <- rbind(Met.KICH, noMet.KICH, Node.KICH)
+
+
+vector <- c("noMet", "Met", "Node")
+
+# noMet file
+foo <- KICH_clinical.MS[KICH_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , 1] 
+b <- foo[ , 68] 
+c <- foo[ , 13] 
+d <- foo[ , 61] 
+
+noMet.file <- cbind(a, b, c, d)
+
+
+# Met file
+foo <- KICH_clinical.MS[KICH_clinical.MS$Status == "Met",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 68]
+c <- foo[ , 13]
+d <- foo[ , 61]
+
+Met.file <- cbind(a, b, c, d)
+
+
+# Node file
+foo <- KICH_clinical.MS[KICH_clinical.MS$Status == "Node",]
+View(foo)
+
+a <- foo[ , 1]
+b <- foo[ , 68]
+c <- foo[ , 13]
+d <- foo[ , 61]
+
+Node.file <- cbind(a, b, c, d)
+options(max.print = 10000)
