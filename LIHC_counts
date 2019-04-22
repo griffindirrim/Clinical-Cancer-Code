@@ -1,0 +1,76 @@
+# TCGA-LIHC
+library(readr)
+TCGA_LIHC_counts <- read_csv("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-LIHC.counts.csv")
+View(TCGA_LIHC_counts)
+
+load("~/CSBL_shared/clinical/TCGA_clin/LIHC_clin.Rdata")
+TCGA_counts <- data.table::fread("~/CSBL_shared/RNASeq/TCGA/counts/TCGA-LIHC.counts.csv")
+
+TCGA_counts <- as.data.frame(TCGA_counts)
+rownames(TCGA_counts) <- TCGA_counts$Ensembl
+TCGA_counts$Ensembl <- NULL
+
+table.TNM <- table(LIHC_clinical$stage_event_tnm_categories)
+View(table.TNM)
+
+# Adding column to TNM Stage Matrix
+Met.LIHC <- 
+
+NoMet.LIHC <- 
+
+Node.LIHC <- 
+
+# Adding column to TNM Stage Matrix 
+dat <- read.csv("TNM_STAGE_LIHC.csv", header = TRUE)
+
+LIHC_clinical.MS <- left_join(LIHC_clinical, dat, by = c("stage_event_tnm_categories" = "TNMSTAGE"))
+
+unique(LIHC_clinical.MS$Status)
+
+# Filter of Status by Stage
+Met.LIHC <- filter(dat, Status == "Met")
+NoMet.LIHC <- filter(dat, Status == "noMet")
+Node.LIHC <- filter(dat, Status == "Node")
+
+
+# Grouping of dat2 by Status
+data.grouped <- rbind(Met.LIHC, NoMet.LIHC, Node.LIHC)
+
+
+vector <- c("noMet", "Met", "Node")
+
+# noMet file
+foo <- LIHC_clinical.MS[LIHC_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , ] 
+b <- foo[ , ] 
+c <- foo[ , ] 
+d <- foo[ , ] 
+
+noMet.file <- cbind(a, b, c, d)
+
+
+# Met file
+foo <- LIHC_clinical.MS[LIHC_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , ] 
+b <- foo[ , ] 
+c <- foo[ , ] 
+d <- foo[ , ] 
+
+Met.file <- cbind(a, b, c, d)
+
+
+# Node file
+foo <- LIHC_clinical.MS[LIHC_clinical.MS$Status == "NoMet",]
+View(foo)
+
+a <- foo[ , ] 
+b <- foo[ , ] 
+c <- foo[ , ] 
+d <- foo[ , ] 
+
+Node.file <- cbind(a, b, c, d)
+options(max.print = 10000)
